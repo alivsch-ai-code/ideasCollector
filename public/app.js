@@ -265,27 +265,26 @@ if (fab) {
 }
 
 const bgMusic = document.getElementById('bgMusic');
+const musicBar = document.getElementById('musicBar');
 const musicToggle = document.getElementById('musicToggle');
 
 function setMusicButton(state) {
-  if (!musicToggle) return;
-  const icon = musicToggle.querySelector('.music-icon');
-  const label = musicToggle.querySelector('.music-label');
-  musicToggle.classList.remove('playing', 'blocked');
+  if (!musicBar || !musicToggle) return;
+  const iconPlay = musicToggle.querySelector('.icon-play');
+  const iconPause = musicToggle.querySelector('.icon-pause');
+  musicBar.classList.remove('playing', 'blocked');
   if (state === 'playing') {
-    musicToggle.classList.add('playing');
+    musicBar.classList.add('playing');
     musicToggle.setAttribute('aria-pressed', 'true');
-    if (icon) icon.textContent = '🔊';
-    if (label) label.textContent = 'Musik läuft';
-  } else if (state === 'blocked') {
-    musicToggle.classList.add('blocked');
-    musicToggle.setAttribute('aria-pressed', 'false');
-    if (icon) icon.textContent = '🎵';
-    if (label) label.textContent = 'Musik abspielen';
+    musicToggle.setAttribute('aria-label', 'Musik pausieren');
+    if (iconPlay) iconPlay.hidden = true;
+    if (iconPause) iconPause.hidden = false;
   } else {
+    if (state === 'blocked') musicBar.classList.add('blocked');
     musicToggle.setAttribute('aria-pressed', 'false');
-    if (icon) icon.textContent = '🎵';
-    if (label) label.textContent = 'Musik';
+    musicToggle.setAttribute('aria-label', 'Musik abspielen');
+    if (iconPlay) iconPlay.hidden = false;
+    if (iconPause) iconPause.hidden = true;
   }
 }
 

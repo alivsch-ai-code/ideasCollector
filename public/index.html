@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="description" content="Sammle anonym Ideen und Stichpunkte für die Lieder — für Roman." />
   <title>Ideensammlung Lieder — Roman</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%B5%3C/text%3E%3C/svg%3E" />
@@ -82,10 +82,16 @@
   <button id="fabSubmit" class="fab" aria-label="Neue Idee schreiben">✚</button>
 
   <audio id="bgMusic" src="Roman_wird_vierzig.mp3" loop preload="none"></audio>
-  <button id="musicToggle" class="music-toggle" aria-label="Musik abspielen" aria-pressed="false">
-    <span class="music-icon">🎵</span>
-    <span class="music-label">Musik</span>
-  </button>
+  <div class="music-bar" id="musicBar">
+    <div class="music-info">
+      <span class="music-note">🎵</span>
+      <span class="music-title">Roman wird vierzig</span>
+    </div>
+    <button id="musicToggle" class="music-play-btn" aria-label="Musik abspielen" aria-pressed="false">
+      <svg class="icon-play" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      <svg class="icon-pause" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" hidden><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+    </button>
+  </div>
 
   <!-- Firebase (used as the database when public/firebase-config.js is present) -->
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
