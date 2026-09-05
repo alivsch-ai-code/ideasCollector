@@ -1,5 +1,4 @@
 node_modules/
-public/firebase-config.js
 likes.json
 posts.txt
 .DS_Store

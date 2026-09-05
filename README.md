@@ -36,7 +36,7 @@ Da GitHub Pages nur statische Dateien ausliefert, läuft kein eigener Server. Al
    }
    ```
 
-`public/firebase-config.js` ist in `.gitignore` und wird **nicht** committet. Ohne diese Datei läuft die App automatisch im Fallback-Modus mit `localStorage` im Browser (nur lokal sichtbar, praktisch zum Testen des Designs).
+`public/firebase-config.js` wird mit committet, damit die auf GitHub Pages deployte, rein statische Seite die Konfiguration laden kann. Das ist unproblematisch: Diese Web-Config (`apiKey`, `projectId` usw.) ist kein Geheimnis, sie ist für die öffentliche Nutzung im Browser gedacht — der eigentliche Schutz läuft über die Firestore-Sicherheitsregeln oben, nicht über Geheimhaltung der Config. Fehlt die Datei (z. B. lokal ohne eigenes Firebase-Projekt), läuft die App automatisch im Fallback-Modus mit `localStorage` im Browser.
 
 ## Deployment auf GitHub Pages
 
