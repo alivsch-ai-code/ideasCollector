@@ -1,0 +1,12 @@
+{
+  "name": "anonymous-posts-app",
+  "version": "1.0.0",
+  "description": "Ein kleines Webapp für anonym eingegebene Beiträge mit Likes",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
