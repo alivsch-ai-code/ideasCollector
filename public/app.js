@@ -267,6 +267,7 @@ if (fab) {
 const PLAYLIST = [
   { title: 'Чёрный Бумер', src: 'chernyi-bumer.mp3' },
   { title: 'Roman wird vierzig', src: 'Roman_wird_vierzig.mp3' },
+  { title: 'Чёрный Бумер (Флизинлегер-мэн)', src: 'chernyi-bumer-fliesenleger-man.mp3' },
 ];
 
 const bgMusic = document.getElementById('bgMusic');
