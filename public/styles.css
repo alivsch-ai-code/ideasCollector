@@ -283,6 +283,51 @@ body{
   .fab{display:flex}
 }
 
+.music-toggle{
+  position:fixed;
+  right:18px;
+  top:18px;
+  z-index:40;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:9px 16px 9px 12px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:600;
+  font-family:inherit;
+  cursor:pointer;
+  box-shadow:var(--shadow);
+  transition:transform .15s ease, border-color .15s ease;
+}
+.music-toggle:hover{transform:translateY(-1px); border-color:var(--accent-2)}
+.music-toggle .music-icon{font-size:16px}
+.music-toggle.playing{
+  border-color:var(--accent-2);
+  background:rgba(34,211,197,0.10);
+}
+.music-toggle.playing .music-icon{animation:musicPulse 1.4s ease-in-out infinite}
+.music-toggle.blocked{
+  border-color:var(--accent-3);
+  animation:musicNudge 1.8s ease-in-out infinite;
+}
+@keyframes musicPulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.2)}
+}
+@keyframes musicNudge{
+  0%,100%{box-shadow:var(--shadow)}
+  50%{box-shadow:0 20px 44px rgba(4,6,16,0.45), 0 0 0 4px rgba(255,123,156,0.25)}
+}
+
+@media(max-width:719px){
+  .music-toggle .music-label{display:none}
+  .music-toggle{padding:10px}
+}
+
 @media(min-width:860px){
   .board-grid{grid-template-columns:1fr 300px}
   .top-section{position:sticky; top:24px; align-self:start}

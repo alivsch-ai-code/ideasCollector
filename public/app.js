@@ -264,6 +264,50 @@ if (fab) {
   });
 }
 
+const bgMusic = document.getElementById('bgMusic');
+const musicToggle = document.getElementById('musicToggle');
+
+function setMusicButton(state) {
+  if (!musicToggle) return;
+  const icon = musicToggle.querySelector('.music-icon');
+  const label = musicToggle.querySelector('.music-label');
+  musicToggle.classList.remove('playing', 'blocked');
+  if (state === 'playing') {
+    musicToggle.classList.add('playing');
+    musicToggle.setAttribute('aria-pressed', 'true');
+    if (icon) icon.textContent = '🔊';
+    if (label) label.textContent = 'Musik läuft';
+  } else if (state === 'blocked') {
+    musicToggle.classList.add('blocked');
+    musicToggle.setAttribute('aria-pressed', 'false');
+    if (icon) icon.textContent = '🎵';
+    if (label) label.textContent = 'Musik abspielen';
+  } else {
+    musicToggle.setAttribute('aria-pressed', 'false');
+    if (icon) icon.textContent = '🎵';
+    if (label) label.textContent = 'Musik';
+  }
+}
+
+if (bgMusic && musicToggle) {
+  bgMusic.volume = 0.6;
+
+  bgMusic.play().then(() => {
+    setMusicButton('playing');
+  }).catch(() => {
+    setMusicButton('blocked');
+  });
+
+  musicToggle.addEventListener('click', () => {
+    if (bgMusic.paused) {
+      bgMusic.play().then(() => setMusicButton('playing')).catch(() => setMusicButton('blocked'));
+    } else {
+      bgMusic.pause();
+      setMusicButton('idle');
+    }
+  });
+}
+
 setDbStatus();
 refresh();
 setInterval(refresh, 10000);
