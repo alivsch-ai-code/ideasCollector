@@ -264,9 +264,19 @@ if (fab) {
   });
 }
 
+const PLAYLIST = [
+  { title: 'Чёрный Бумер', src: 'chernyi-bumer.mp3' },
+  { title: 'Roman wird vierzig', src: 'Roman_wird_vierzig.mp3' },
+];
+
 const bgMusic = document.getElementById('bgMusic');
 const musicBar = document.getElementById('musicBar');
 const musicToggle = document.getElementById('musicToggle');
+const musicTitle = document.getElementById('musicTitle');
+const musicPrev = document.getElementById('musicPrev');
+const musicNext = document.getElementById('musicNext');
+
+let currentTrack = 0;
 
 function setMusicButton(state) {
   if (!musicBar || !musicToggle) return;
@@ -288,14 +298,22 @@ function setMusicButton(state) {
   }
 }
 
+function loadTrack(index, autoplay) {
+  currentTrack = (index + PLAYLIST.length) % PLAYLIST.length;
+  const track = PLAYLIST[currentTrack];
+  if (musicTitle) musicTitle.textContent = track.title;
+  bgMusic.src = track.src;
+  if (autoplay) {
+    bgMusic.play().then(() => setMusicButton('playing')).catch(() => setMusicButton('blocked'));
+  }
+}
+
 if (bgMusic && musicToggle) {
   bgMusic.volume = 0.6;
+  loadTrack(0, false);
+  bgMusic.play().then(() => setMusicButton('playing')).catch(() => setMusicButton('blocked'));
 
-  bgMusic.play().then(() => {
-    setMusicButton('playing');
-  }).catch(() => {
-    setMusicButton('blocked');
-  });
+  bgMusic.addEventListener('ended', () => loadTrack(currentTrack + 1, true));
 
   musicToggle.addEventListener('click', () => {
     if (bgMusic.paused) {
@@ -305,6 +323,9 @@ if (bgMusic && musicToggle) {
       setMusicButton('idle');
     }
   });
+
+  musicPrev?.addEventListener('click', () => loadTrack(currentTrack - 1, true));
+  musicNext?.addEventListener('click', () => loadTrack(currentTrack + 1, true));
 }
 
 setDbStatus();

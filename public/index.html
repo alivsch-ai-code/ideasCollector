@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=3" />
+  <link rel="stylesheet" href="styles.css?v=4" />
 </head>
 <body>
   <div class="bg-glow" aria-hidden="true"></div>
@@ -81,22 +81,30 @@
 
   <button id="fabSubmit" class="fab" aria-label="Neue Idee schreiben">✚</button>
 
-  <audio id="bgMusic" src="Roman_wird_vierzig.mp3" loop preload="none"></audio>
+  <audio id="bgMusic" preload="none"></audio>
   <div class="music-bar" id="musicBar">
     <div class="music-info">
       <span class="music-note">🎵</span>
-      <span class="music-title">Roman wird vierzig</span>
+      <span class="music-title" id="musicTitle">—</span>
     </div>
-    <button id="musicToggle" class="music-play-btn" aria-label="Musik abspielen" aria-pressed="false">
-      <svg class="icon-play" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-      <svg class="icon-pause" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" hidden><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
-    </button>
+    <div class="music-controls">
+      <button id="musicPrev" class="music-skip-btn" aria-label="Vorheriger Song">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+      </button>
+      <button id="musicToggle" class="music-play-btn" aria-label="Musik abspielen" aria-pressed="false">
+        <svg class="icon-play" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <svg class="icon-pause" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" hidden><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+      </button>
+      <button id="musicNext" class="music-skip-btn" aria-label="Nächster Song">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 6l8.5 6L6 18z"/></svg>
+      </button>
+    </div>
   </div>
 
   <!-- Firebase (used as the database when public/firebase-config.js is present) -->
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
   <script src="firebase-config.js" onerror="console.info('Keine firebase-config.js gefunden — Fallback wird verwendet.')"></script>
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>

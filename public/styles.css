@@ -314,6 +314,12 @@ body{
   overflow:hidden;
   text-overflow:ellipsis;
 }
+.music-controls{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex:0 0 auto;
+}
 .music-play-btn{
   flex:0 0 auto;
   width:52px;height:52px;
@@ -332,6 +338,22 @@ body{
 .music-play-btn .icon-play,
 .music-play-btn .icon-pause{margin-left:1px}
 .music-bar.blocked .music-play-btn{animation:musicNudge 1.6s ease-in-out infinite}
+
+.music-skip-btn{
+  flex:0 0 auto;
+  width:40px;height:40px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--surface-2);
+  color:var(--text);
+  border:1px solid var(--border);
+  cursor:pointer;
+  transition:transform .12s ease, border-color .15s ease;
+}
+.music-skip-btn:hover{border-color:var(--accent-2)}
+.music-skip-btn:active{transform:scale(.9)}
 
 @keyframes musicPulse{
   0%,100%{transform:scale(1)}
