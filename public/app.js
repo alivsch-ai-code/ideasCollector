@@ -537,7 +537,7 @@ if (easterEggTrigger) {
 }
 
 // --- Countdown bis zur Feier ---
-const PARTY_DATE = null; // z. B. new Date('2026-11-14T18:00:00')
+const PARTY_DATE = new Date('2026-09-11T00:00:00');
 
 function updateCountdown() {
   const banner = document.getElementById('countdownBanner');
