@@ -50,8 +50,14 @@ function likeLocalPost(id) {
 
 async function fetchPosts() {
   if (hasFirebase()) {
-    const snapshot = await db.collection('posts').orderBy('createdAt', 'desc').get();
-    return snapshot.docs.map(doc => ({ id: doc.id, text: doc.data().text, likes: doc.data().likes || 0 }));
+    try {
+      const snapshot = await db.collection('posts').orderBy('createdAt', 'desc').get();
+      return snapshot.docs.map(doc => ({ id: doc.id, text: doc.data().text, likes: doc.data().likes || 0 }));
+    } catch (e) {
+      console.error('Firestore-Fehler beim Laden:', e);
+      showStatus('Fehler beim Laden aus Firestore: ' + (e && e.message ? e.message : e), 'error');
+      return getLocalPosts();
+    }
   }
   try {
     const res = await fetch('/api/posts');
@@ -129,6 +135,9 @@ function makeIdeaCard(post) {
       liked.add(String(post.id));
       saveLikedSet(liked);
       await refresh();
+    } catch (e) {
+      console.error('Fehler beim Liken:', e);
+      showStatus('Like konnte nicht gespeichert werden.', 'error');
     } finally {
       likeBtn.disabled = false;
     }
