@@ -102,9 +102,11 @@
   </div>
 
   <!-- Firebase (used as the database when public/firebase-config.js is present) -->
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <!-- Self-hosted instead of loaded from gstatic.com: Firefox's tracking protection
+       (and some ad blockers) block that domain, which silently broke Firestore. -->
+  <script src="vendor/firebase-app-compat.js"></script>
+  <script src="vendor/firebase-firestore-compat.js"></script>
   <script src="firebase-config.js" onerror="console.info('Keine firebase-config.js gefunden — Fallback wird verwendet.')"></script>
-  <script src="app.js?v=6"></script>
+  <script src="app.js?v=7"></script>
 </body>
 </html>
