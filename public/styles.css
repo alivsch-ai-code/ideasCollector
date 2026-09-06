@@ -79,6 +79,21 @@ body{
 }
 .lead{margin:0;color:var(--text-muted);font-size:15px;line-height:1.55}
 
+.countdown-banner{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin:16px auto 0;
+  background:linear-gradient(120deg, rgba(124,92,255,0.15), rgba(34,211,197,0.15));
+  border:1px solid var(--border);
+  padding:8px 16px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:600;
+  color:var(--text);
+}
+.countdown-emoji{font-size:16px}
+
 .layout{display:flex;flex-direction:column;gap:22px}
 
 /* Composer */
@@ -111,7 +126,21 @@ body{
   padding-top:10px;
   border-top:1px solid var(--border);
 }
+.composer-footer-left{display:flex; align-items:center; gap:12px}
 .char-count{font-size:12px;color:var(--text-muted)}
+.suggest-btn{
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+  transition:transform .12s ease, border-color .15s ease;
+}
+.suggest-btn:hover{border-color:var(--accent-2)}
+.suggest-btn:active{transform:scale(.95)}
 .btn-primary{
   display:inline-flex;
   align-items:center;
@@ -251,6 +280,39 @@ body{
 .db-dot{width:8px;height:8px;border-radius:50%;background:var(--text-muted);flex:0 0 auto}
 .db-dot.online{background:var(--ok); box-shadow:0 0 0 3px rgba(52,211,153,0.18)}
 .db-dot.offline{background:#e0a53d; box-shadow:0 0 0 3px rgba(224,165,61,0.18)}
+
+.live-panel{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-muted)}
+.live-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--ok);
+  box-shadow:0 0 0 3px rgba(52,211,153,0.18);
+  flex:0 0 auto;
+  animation:livePulse 1.6s ease-in-out infinite;
+}
+@keyframes livePulse{
+  0%,100%{opacity:1}
+  50%{opacity:.4}
+}
+
+.confetti-canvas{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  pointer-events:none;
+}
+
+.emoji-rain-item{
+  position:fixed;
+  top:-40px;
+  font-size:28px;
+  z-index:9998;
+  pointer-events:none;
+  animation:emojiFall linear forwards;
+}
+@keyframes emojiFall{
+  from{transform:translateY(0) rotate(0deg); opacity:1}
+  to{transform:translateY(110vh) rotate(360deg); opacity:.9}
+}
 
 .footer{
   text-align:center;

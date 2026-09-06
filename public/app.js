@@ -129,12 +129,15 @@ function makeIdeaCard(post) {
   likeBtn.innerHTML = `<span>${likedSet.has(String(post.id)) ? '❤️' : '🤍'}</span><span>${post.likes}</span>`;
   likeBtn.addEventListener('click', async () => {
     likeBtn.disabled = true;
+    const wasFirstLike = post.likes === 0;
     try {
       await likePost(post.id);
       const liked = getLikedSet();
       liked.add(String(post.id));
       saveLikedSet(liked);
       await refresh();
+      playChime();
+      if (wasFirstLike) triggerConfetti();
     } catch (e) {
       console.error('Fehler beim Liken:', e);
       showStatus('Like konnte nicht gespeichert werden.', 'error');
@@ -255,11 +258,38 @@ if (composerForm) {
       if (charCount) charCount.textContent = '0 / 280';
       showStatus('Danke! Deine Idee wurde gespeichert.', 'ok');
       await refresh();
+      triggerConfetti();
+      playChime();
     } catch (err) {
       showStatus('Etwas ist schiefgelaufen. Bitte versuche es erneut.', 'error');
     } finally {
       submitBtn.disabled = false;
     }
+  });
+}
+
+const IDEA_PROMPTS = [
+  'Eine Erinnerung an einen gemeinsamen Roadtrip mit Roman',
+  'Romans peinlichster Moment, den alle kennen',
+  'Ein Spitzname, den Roman mal hatte (oder haben sollte)',
+  'Sein größter Sieg oder stolzester Moment',
+  'Ein Insider-Witz, den nur ihr versteht',
+  'Was Roman garantiert in jeder Situation sagt',
+  'Seine Lieblingsausrede, wenn er zu spät kommt',
+  'Ein Hobby von Roman, das alle überrascht hat',
+  'Die verrückteste Nacht mit Roman',
+  'Was Roman in 10 Jahren wohl macht',
+  'Ein Satz, der Roman perfekt beschreibt',
+  'Sein bestes (oder schlechtestes) Fashion-Statement',
+];
+
+const ideaSuggestBtn = document.getElementById('ideaSuggestBtn');
+if (ideaSuggestBtn && postText) {
+  ideaSuggestBtn.addEventListener('click', () => {
+    const prompt = IDEA_PROMPTS[Math.floor(Math.random() * IDEA_PROMPTS.length)];
+    postText.value = prompt;
+    postText.focus();
+    postText.dispatchEvent(new Event('input'));
   });
 }
 
@@ -338,6 +368,194 @@ if (bgMusic && musicToggle) {
   musicPrev?.addEventListener('click', () => loadTrack(currentTrack - 1, true));
   musicNext?.addEventListener('click', () => loadTrack(currentTrack + 1, true));
 }
+
+// --- Konfetti ---
+const confettiCanvas = document.getElementById('confettiCanvas');
+const confettiCtx = confettiCanvas ? confettiCanvas.getContext('2d') : null;
+
+function resizeConfettiCanvas() {
+  if (!confettiCanvas) return;
+  confettiCanvas.width = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeConfettiCanvas);
+resizeConfettiCanvas();
+
+function triggerConfetti() {
+  if (!confettiCtx) return;
+  const colors = ['#7c5cff', '#22d3c5', '#ff7b9c', '#ffd36b', '#34d399'];
+  const particles = Array.from({ length: 120 }, () => ({
+    x: confettiCanvas.width / 2,
+    y: confettiCanvas.height / 3,
+    vx: (Math.random() - 0.5) * 14,
+    vy: Math.random() * -14 - 4,
+    size: Math.random() * 6 + 4,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    rotation: Math.random() * Math.PI * 2,
+    rotationSpeed: (Math.random() - 0.5) * 0.3,
+  }));
+
+  const gravity = 0.35;
+  const duration = 2200;
+  const start = performance.now();
+
+  function frame(now) {
+    const elapsed = now - start;
+    confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    particles.forEach(p => {
+      p.vy += gravity;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rotation += p.rotationSpeed;
+      confettiCtx.save();
+      confettiCtx.translate(p.x, p.y);
+      confettiCtx.rotate(p.rotation);
+      confettiCtx.fillStyle = p.color;
+      confettiCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+      confettiCtx.restore();
+    });
+    if (elapsed < duration) {
+      requestAnimationFrame(frame);
+    } else {
+      confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+// --- Sound-Chime ---
+let audioCtx = null;
+function playChime() {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const now = audioCtx.currentTime;
+    [0, 0.12].forEach((delay, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = i === 0 ? 880 : 1174.66;
+      gain.gain.setValueAtTime(0.0001, now + delay);
+      gain.gain.exponentialRampToValueAtTime(0.15, now + delay + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + delay + 0.3);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(now + delay);
+      osc.stop(now + delay + 0.35);
+    });
+  } catch (e) {
+    // Sound ist ein Gimmick, kein Fehler wert
+  }
+}
+
+// --- Live-Besucherzähler (Firestore presence) ---
+const PRESENCE_TTL_MS = 45000;
+const HEARTBEAT_INTERVAL_MS = 20000;
+
+function getVisitorId() {
+  let id = localStorage.getItem('ideasCollector.visitorId');
+  if (!id) {
+    id = 'v-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem('ideasCollector.visitorId', id);
+  }
+  return id;
+}
+
+async function heartbeatPresence() {
+  if (!hasFirebase()) return;
+  try {
+    await db.collection('presence').doc(getVisitorId()).set({
+      lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+  } catch (e) {
+    // Presence ist ein Gimmick, kein Fehler wert
+  }
+}
+
+async function updateLiveCount() {
+  const livePanel = document.getElementById('livePanel');
+  const liveCountEl = document.getElementById('liveCount');
+  if (!hasFirebase() || !livePanel || !liveCountEl) return;
+  try {
+    const snapshot = await db.collection('presence').get();
+    const now = Date.now();
+    let count = 0;
+    snapshot.forEach(doc => {
+      const lastSeen = doc.data().lastSeen;
+      if (lastSeen && lastSeen.toMillis && (now - lastSeen.toMillis()) < PRESENCE_TTL_MS) {
+        count++;
+      }
+    });
+    if (count > 0) {
+      livePanel.hidden = false;
+      liveCountEl.textContent = count === 1 ? '1 Person gerade hier' : `${count} Personen gerade hier`;
+    } else {
+      livePanel.hidden = true;
+    }
+  } catch (e) {
+    livePanel.hidden = true;
+  }
+}
+
+if (hasFirebase()) {
+  heartbeatPresence();
+  updateLiveCount();
+  setInterval(heartbeatPresence, HEARTBEAT_INTERVAL_MS);
+  setInterval(updateLiveCount, 15000);
+}
+
+// --- Easter Egg: 10x auf die Musiknote klicken ---
+let easterEggClicks = 0;
+let easterEggTimer = null;
+const easterEggTrigger = document.getElementById('easterEggTrigger');
+
+function triggerEmojiRain() {
+  const emojis = ['🎉', '🥳', '🎂', '🎈', '🍾'];
+  for (let i = 0; i < 40; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'emoji-rain-item';
+      el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.animationDuration = (2 + Math.random() * 1.5) + 's';
+      document.body.appendChild(el);
+      el.addEventListener('animationend', () => el.remove());
+    }, i * 40);
+  }
+}
+
+if (easterEggTrigger) {
+  easterEggTrigger.addEventListener('click', () => {
+    easterEggClicks++;
+    clearTimeout(easterEggTimer);
+    easterEggTimer = setTimeout(() => { easterEggClicks = 0; }, 2000);
+    if (easterEggClicks >= 10) {
+      easterEggClicks = 0;
+      triggerEmojiRain();
+      triggerConfetti();
+      showStatus('🎉 Alles Gute, Roman!', 'ok');
+    }
+  });
+}
+
+// --- Countdown bis zur Feier ---
+const PARTY_DATE = null; // z. B. new Date('2026-11-14T18:00:00')
+
+function updateCountdown() {
+  const banner = document.getElementById('countdownBanner');
+  const text = document.getElementById('countdownText');
+  if (!PARTY_DATE || !banner || !text) return;
+  const diffMs = PARTY_DATE - new Date();
+  if (diffMs <= 0) {
+    banner.hidden = false;
+    text.textContent = 'Die Feier läuft (oder ist schon vorbei)! 🎉';
+    return;
+  }
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
+  banner.hidden = false;
+  text.textContent = `Noch ${days} Tag${days === 1 ? '' : 'e'} und ${hours} Std. bis Romans Feier!`;
+}
+updateCountdown();
+setInterval(updateCountdown, 60000);
 
 setDbStatus();
 refresh();

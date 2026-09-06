@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=6" />
+  <link rel="stylesheet" href="styles.css?v=7" />
 </head>
 <body>
   <div class="bg-glow" aria-hidden="true"></div>
@@ -19,6 +19,10 @@
       <p class="eyebrow">✨ Ideensammlung</p>
       <h1 class="site-title">Stichpunkte für die Lieder</h1>
       <p class="lead">Hilf mit, ein unvergessliches Erlebnis für Roman zu schaffen — teile deine Ideen und Begriffe. Anonym &amp; in Sekunden.</p>
+      <div id="countdownBanner" class="countdown-banner" hidden>
+        <span class="countdown-emoji">🎂</span>
+        <span id="countdownText"></span>
+      </div>
     </header>
 
     <main class="layout">
@@ -33,7 +37,10 @@
             required
           ></textarea>
           <div class="composer-footer">
-            <span id="charCount" class="char-count">0 / 280</span>
+            <div class="composer-footer-left">
+              <button type="button" id="ideaSuggestBtn" class="suggest-btn">🎲 Ideenblitz</button>
+              <span id="charCount" class="char-count">0 / 280</span>
+            </div>
             <button type="submit" id="submitBtn" class="btn-primary">
               <span>Absenden</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h16m0 0l-6-6m6 6l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -70,6 +77,10 @@
             <span class="db-dot" id="dbDot"></span>
             <span id="dbLabel">Speicher wird geprüft…</span>
           </div>
+          <div class="panel live-panel" id="livePanel" hidden>
+            <span class="live-dot"></span>
+            <span id="liveCount">1 Person gerade hier</span>
+          </div>
         </aside>
       </div>
     </main>
@@ -84,7 +95,7 @@
   <audio id="bgMusic" preload="none"></audio>
   <div class="music-bar" id="musicBar">
     <div class="music-info">
-      <span class="music-note">🎵</span>
+      <span class="music-note" id="easterEggTrigger">🎵</span>
       <span class="music-title" id="musicTitle">—</span>
     </div>
     <div class="music-controls">
@@ -101,12 +112,14 @@
     </div>
   </div>
 
+  <canvas id="confettiCanvas" class="confetti-canvas" aria-hidden="true"></canvas>
+
   <!-- Firebase (used as the database when public/firebase-config.js is present) -->
   <!-- Self-hosted instead of loaded from gstatic.com: Firefox's tracking protection
        (and some ad blockers) block that domain, which silently broke Firestore. -->
   <script src="vendor/firebase-app-compat.js"></script>
   <script src="vendor/firebase-firestore-compat.js"></script>
   <script src="firebase-config.js" onerror="console.info('Keine firebase-config.js gefunden — Fallback wird verwendet.')"></script>
-  <script src="app.js?v=8"></script>
+  <script src="app.js?v=9"></script>
 </body>
 </html>
