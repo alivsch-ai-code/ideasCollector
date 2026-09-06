@@ -514,7 +514,7 @@ function triggerEmojiRain() {
       const el = document.createElement('div');
       el.className = 'emoji-rain-item';
       el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-      el.style.left = Math.random() * 100 + 'vw';
+      el.style.left = (Math.random() * 90 + 2) + 'vw';
       el.style.animationDuration = (2 + Math.random() * 1.5) + 's';
       document.body.appendChild(el);
       el.addEventListener('animationend', () => el.remove());
